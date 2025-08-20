@@ -1,4 +1,4 @@
-import {Text, View, Image, TouchableOpacity, FlatList, ActivityIndicator} from "react-native";
+import {Text, View, Image, TouchableOpacity, FlatList, ActivityIndicator, Button} from "react-native";
 import {router, useLocalSearchParams} from "expo-router";
 import {SafeAreaView} from "react-native-safe-area-context";
 
@@ -11,6 +11,7 @@ import {getLatestProperties, getProperties} from "@/lib/appwrite";
 import {useAppwrite} from "@/lib/useAppwrite";
 import {useEffect} from "react";
 import NoResults from "@/components/NoResults";
+import {grabUserLocationInfo} from "@/lib/google";
 
 export default function Index() {
     const {user} = useGlobalContext()
@@ -45,6 +46,7 @@ export default function Index() {
 
     return (
     <SafeAreaView className={"bg-white h-full"}>
+        <Button onPress={grabUserLocationInfo} title={"Yeet"}></Button>
         <FlatList
             data={properties}
             renderItem={({item}) => <Card item={item} onPress={() => handleCardPress(item.$id)}/>}
