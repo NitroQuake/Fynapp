@@ -7,6 +7,7 @@ import icons from "@/constants/icons";
 import {login} from "@/lib/appwrite"
 import {useGlobalContext} from "@/lib/global-provider";
 import {Redirect} from "expo-router";
+import Auth from "@/components/Auth";
 
 const SignIn = () => {
     const {refetch, loading, isLoggedIn } = useGlobalContext();
@@ -50,6 +51,7 @@ const SignIn = () => {
                             <Text className={"text-lg font-rubik-medium text-black-300 ml-2"}>Continue with Google</Text>
                         </View>
                     </TouchableOpacity>
+                    <Auth />
                 </View>
             </ScrollView>
         </SafeAreaView>
