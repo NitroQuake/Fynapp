@@ -46,7 +46,6 @@ export default function Index() {
 
     return (
     <SafeAreaView className={"bg-white h-full"}>
-        <Button onPress={grabUserLocationInfo} title={"Yeet"}></Button>
         <FlatList
             data={properties}
             renderItem={({item}) => <Card item={item} onPress={() => handleCardPress(item.id)}/>}
