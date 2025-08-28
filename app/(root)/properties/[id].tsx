@@ -81,7 +81,7 @@ const Property = () => {
                     <View className="flex flex-row items-center gap-3">
                         <View className="flex flex-row items-center px-4 py-2 bg-primary-100 rounded-full">
                             <Text className="text-xs font-rubik-bold text-primary-300">
-                                N/A
+                                {property?.category}
                             </Text>
                         </View>
 

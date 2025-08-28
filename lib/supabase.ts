@@ -114,10 +114,10 @@ export async function getProperties({filter, query, limit }: {
 
         // Add filter conditions
         if (filter && filter !== "All") {
-            filterConditions.push(`name.eq.${filter}`);
+            filterConditions.push(`category.eq.${filter}`);
         }
         if (query) {
-            filterConditions.push(`name.eq.${query}`);
+            filterConditions.push(`name.ilike.${query}`);
         }
 
         // Apply .or() only if there are conditions
