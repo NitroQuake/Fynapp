@@ -4,7 +4,7 @@ import {SafeAreaView} from "react-native-safe-area-context";
 
 import images from "@/constants/images";
 import icons from "@/constants/icons";
-import {login} from "@/lib/appwrite"
+import {login} from "@/lib/supabase"
 import {useGlobalContext} from "@/lib/global-provider";
 import {Redirect} from "expo-router";
 import Auth from "@/components/Auth";
@@ -24,7 +24,7 @@ const SignIn = () => {
             refetch();
         } else {
             // Handle login failure
-            Alert.alert("Error", "Filed to Login");
+            Alert.alert("Error", "Failed to Login");
         }
     };
 
@@ -51,7 +51,7 @@ const SignIn = () => {
                             <Text className={"text-lg font-rubik-medium text-black-300 ml-2"}>Continue with Google</Text>
                         </View>
                     </TouchableOpacity>
-                    <Auth />
+                    <Auth onPress={handleLogin}/>
                 </View>
             </ScrollView>
         </SafeAreaView>

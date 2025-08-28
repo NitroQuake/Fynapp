@@ -1,6 +1,6 @@
 import {createContext, ReactNode, useContext} from "react";
-import {useAppwrite} from "@/lib/useAppwrite";
-import {getCurrentUser} from "./appwrite";
+import {useSupabase} from "@/lib/useSupabase";
+import {getCurrentUser} from "./supabase";
 
 interface User {
     $id: string;
@@ -23,7 +23,7 @@ export const GlobalProvider = ({ children }: {children: ReactNode}) => {
         data: user,
         loading,
         refetch,
-    } = useAppwrite({
+    } = useSupabase({
         fn: getCurrentUser,
     })
 

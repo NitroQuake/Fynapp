@@ -15,18 +15,18 @@ import images from "@/constants/images";
 import Comment from "@/components/Comment";
 import { facilities } from "@/constants/data";
 
-import { useAppwrite } from "@/lib/useAppwrite";
-import { getPropertyById } from "@/lib/appwrite";
+import { useSupabase } from "@/lib/useSupabase";
+import {getPropertyById} from "@/lib/supabase";
 
 const Property = () => {
     const { id } = useLocalSearchParams<{ id?: string }>();
 
     const windowHeight = Dimensions.get("window").height;
 
-    const { data: property } = useAppwrite({
+    const { data: property } = useSupabase({
         fn: getPropertyById,
         params: {
-            id: id!,
+            id: id!
         },
     });
 
@@ -81,7 +81,7 @@ const Property = () => {
                     <View className="flex flex-row items-center gap-3">
                         <View className="flex flex-row items-center px-4 py-2 bg-primary-100 rounded-full">
                             <Text className="text-xs font-rubik-bold text-primary-300">
-                                {property?.type}
+                                N/A
                             </Text>
                         </View>
 
@@ -98,19 +98,19 @@ const Property = () => {
                             <Image source={icons.bed} className="size-4" />
                         </View>
                         <Text className="text-black-300 text-sm font-rubik-medium ml-2">
-                            {property?.bedrooms} Beds
+                            N/A Beds
                         </Text>
                         <View className="flex flex-row items-center justify-center bg-primary-100 rounded-full size-10 ml-7">
                             <Image source={icons.bath} className="size-4" />
                         </View>
                         <Text className="text-black-300 text-sm font-rubik-medium ml-2">
-                            {property?.bathrooms} Baths
+                            N/A Baths
                         </Text>
                         <View className="flex flex-row items-center justify-center bg-primary-100 rounded-full size-10 ml-7">
                             <Image source={icons.area} className="size-4" />
                         </View>
                         <Text className="text-black-300 text-sm font-rubik-medium ml-2">
-                            {property?.area} sqft
+                            N/A sqft
                         </Text>
                     </View>
 
@@ -122,16 +122,16 @@ const Property = () => {
                         <View className="flex flex-row items-center justify-between mt-4">
                             <View className="flex flex-row items-center">
                                 <Image
-                                    source={{ uri: property?.agent.avatar }}
+                                    source={{ uri: property?.agent?.avatar }}
                                     className="size-14 rounded-full"
                                 />
 
                                 <View className="flex flex-col items-start justify-center ml-3">
                                     <Text className="text-lg text-black-300 text-start font-rubik-bold">
-                                        {property?.agent.name}
+                                        {property?.agent?.name}
                                     </Text>
                                     <Text className="text-sm text-black-200 text-start font-rubik-medium">
-                                        {property?.agent.email}
+                                        {property?.agent?.email}
                                     </Text>
                                 </View>
                             </View>
@@ -157,47 +157,47 @@ const Property = () => {
                             Facilities
                         </Text>
 
-                        {property?.facilities.length > 0 && (
-                            <View className="flex flex-row flex-wrap items-start justify-start mt-2 gap-5">
-                                {property?.facilities.map((item: string, index: number) => {
-                                    const facility = facilities.find(
-                                        (facility) => facility.title === item
-                                    );
+                        {/*{property?.facilities.length > 0 && (*/}
+                        {/*    <View className="flex flex-row flex-wrap items-start justify-start mt-2 gap-5">*/}
+                        {/*        {property?.facilities.map((item: string, index: number) => {*/}
+                        {/*            const facility = facilities.find(*/}
+                        {/*                (facility) => facility.title === item*/}
+                        {/*            );*/}
 
-                                    return (
-                                        <View
-                                            key={index}
-                                            className="flex flex-1 flex-col items-center min-w-16 max-w-20"
-                                        >
-                                            <View className="size-14 bg-primary-100 rounded-full flex items-center justify-center">
-                                                <Image
-                                                    source={facility ? facility.icon : icons.info}
-                                                    className="size-6"
-                                                />
-                                            </View>
+                        {/*            return (*/}
+                        {/*                <View*/}
+                        {/*                    key={index}*/}
+                        {/*                    className="flex flex-1 flex-col items-center min-w-16 max-w-20"*/}
+                        {/*                >*/}
+                        {/*                    <View className="size-14 bg-primary-100 rounded-full flex items-center justify-center">*/}
+                        {/*                        <Image*/}
+                        {/*                            source={facility ? facility.icon : icons.info}*/}
+                        {/*                            className="size-6"*/}
+                        {/*                        />*/}
+                        {/*                    </View>*/}
 
-                                            <Text
-                                                numberOfLines={1}
-                                                ellipsizeMode="tail"
-                                                className="text-black-300 text-sm text-center font-rubik mt-1.5"
-                                            >
-                                                {item}
-                                            </Text>
-                                        </View>
-                                    );
-                                })}
-                            </View>
-                        )}
+                        {/*                    <Text*/}
+                        {/*                        numberOfLines={1}*/}
+                        {/*                        ellipsizeMode="tail"*/}
+                        {/*                        className="text-black-300 text-sm text-center font-rubik mt-1.5"*/}
+                        {/*                    >*/}
+                        {/*                        {item}*/}
+                        {/*                    </Text>*/}
+                        {/*                </View>*/}
+                        {/*            );*/}
+                        {/*        })}*/}
+                        {/*    </View>*/}
+                        {/*)}*/}
                     </View>
 
-                    {property?.gallery.length > 0 && (
+                    {property?.galleries.length > 0 && (
                         <View className="mt-7">
                             <Text className="text-black-300 text-xl font-rubik-bold">
                                 Gallery
                             </Text>
                             <FlatList
                                 contentContainerStyle={{ paddingRight: 20 }}
-                                data={property?.gallery}
+                                data={property?.galleries}
                                 keyExtractor={(item) => item.$id}
                                 horizontal
                                 showsHorizontalScrollIndicator={false}

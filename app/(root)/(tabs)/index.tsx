@@ -7,8 +7,8 @@ import Search from "@/components/Search";
 import {Card, FeaturedCard} from "@/components/Cards";
 import Filters from "@/components/Filters";
 import {useGlobalContext} from "@/lib/global-provider";
-import {getLatestProperties, getProperties} from "@/lib/appwrite";
-import {useAppwrite} from "@/lib/useAppwrite";
+import {getLatestProperties, getProperties} from "@/lib/supabase";
+import {useSupabase} from "@/lib/useSupabase";
 import {useEffect} from "react";
 import NoResults from "@/components/NoResults";
 import {grabUserLocationInfo} from "@/lib/google";
@@ -17,13 +17,13 @@ export default function Index() {
     const {user} = useGlobalContext()
     const params = useLocalSearchParams<{query?: string; filter?: string;}>();
 
-    // Fetch the latest properties using the Appwrite function
-    const {data: latestProperties, loading: latestPropertiesLoading} = useAppwrite({
+    // Fetch the latest properties using the Supabase function
+    const {data: latestProperties, loading: latestPropertiesLoading} = useSupabase({
         fn: getLatestProperties
     });
 
     // Fetch properties based on the filter and query parameters
-    const {data: properties, loading, refetch} = useAppwrite({
+    const {data: properties, loading, refetch} = useSupabase({
         fn: getProperties,
         params: {
             filter: params.filter!,
@@ -49,8 +49,8 @@ export default function Index() {
         <Button onPress={grabUserLocationInfo} title={"Yeet"}></Button>
         <FlatList
             data={properties}
-            renderItem={({item}) => <Card item={item} onPress={() => handleCardPress(item.$id)}/>}
-            keyExtractor={(item) => item.$id}
+            renderItem={({item}) => <Card item={item} onPress={() => handleCardPress(item.id)}/>}
+            keyExtractor={(item) => item.id}
             numColumns={2} contentContainerClassName={"pb-32"}
             columnWrapperClassName={"flex gap-5 px-5"}
             showsVerticalScrollIndicator={false}
@@ -85,8 +85,8 @@ export default function Index() {
                             : !latestProperties || latestProperties.length === 0 ? <NoResults /> : (
                             <FlatList
                                 data={latestProperties}
-                                renderItem={({item}) => <FeaturedCard item={item} onPress={() => handleCardPress(item.$id)}/>}
-                                keyExtractor={(item) => item.$id}
+                                renderItem={({item}) => <FeaturedCard item={item} onPress={() => handleCardPress(item.id)}/>}
+                                keyExtractor={(item) => item.id}
                                 horizontal
                                 bounces={false}
                                 showsHorizontalScrollIndicator={false}

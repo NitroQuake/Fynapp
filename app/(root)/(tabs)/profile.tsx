@@ -6,7 +6,7 @@ import icons from "@/constants/icons";
 import images from "@/constants/images";
 import {settings} from "@/constants/data";
 import {useGlobalContext} from "@/lib/global-provider";
-import {logout} from "@/lib/appwrite";
+import {logout} from "@/lib/supabase";
 
 interface SettingsItemProps {
     icon: ImageSourcePropType;
