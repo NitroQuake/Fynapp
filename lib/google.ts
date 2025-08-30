@@ -1,6 +1,22 @@
 import React, {useState} from 'react'
 import * as Location from 'expo-location';
 
+export async function isValidAddressWithOSM(address: string) {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (Array.isArray(data) && data.length > 0) {
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].display_name.includes("Washington")) {
+                return `${data[i].lat}, ${data[i].lon}`;
+            }
+        }
+    }
+
+    return null
+}
+
 export async function grabUserLocationInfo() {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {

@@ -11,7 +11,6 @@ import {getLatestProperties, getProperties} from "@/lib/supabase";
 import {useSupabase} from "@/lib/useSupabase";
 import {useEffect} from "react";
 import NoResults from "@/components/NoResults";
-import {grabUserLocationInfo} from "@/lib/google";
 
 export default function Index() {
     const {user} = useGlobalContext()
@@ -65,7 +64,7 @@ export default function Index() {
                             <Image source={{uri: user?.avatar}} className={"size-12 rounded-full"} />
                             <View className={"flex flex-col items-start ml-2 justify-center"}>
                                 <Text className={"text-xs font-rubik text-black-100"}>Good Morning</Text>
-                                <Text className={"text-base font-rubik-medium text-black-300"}>{user?.name}</Text>
+                                <Text className={"text-base font-rubik-medium text-black-300"}>{user?.user_metadata.name}</Text>
                             </View>
                         </View>
                         <Image source={icons.bell} className={"size-6"} />

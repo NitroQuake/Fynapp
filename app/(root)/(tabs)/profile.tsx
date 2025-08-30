@@ -3,43 +3,14 @@ import React from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 
 import icons from "@/constants/icons";
-import images from "@/constants/images";
-import {settings} from "@/constants/data";
 import {useGlobalContext} from "@/lib/global-provider";
-import {logout} from "@/lib/supabase";
+import {router} from "expo-router";
 
-interface SettingsItemProps {
-    icon: ImageSourcePropType;
-    title: string;
-    onPress?: () => void;
-    textStyle?: string;
-    showArrow?: boolean;
-}
-
-const SettingsItem = ({icon, title, onPress, textStyle, showArrow = true }: SettingsItemProps ) => (
-    <TouchableOpacity onPress={onPress} className={"flex flex-row items-center justify-between py-3"}>
-        <View className={"flex flex-row items-center gap-3"}>
-            <Image source={icon} className={"size-6"}/>
-            <Text className={`text-lg font-rubik-medium text-black-300 ${textStyle}`}>{title}</Text>
-        </View>
-
-        {showArrow && <Image source={icons.rightArrow} className={"size-5"}/>}
-    </TouchableOpacity>
-)
+const handleEditProfilePress = () => router.push("/profile settings/profile-settings");
+const handleEditListingsPress = () => router.push("/listings/listings");
 
 const Profile = () => {
-    const { user, refetch } = useGlobalContext();
-
-    const handleLogout = async () => {
-        const result = await logout();
-
-        if (result) {
-            Alert.alert("Success", "You have been logged out successfully.");
-            refetch();
-        } else {
-            Alert.alert("Error", "An error occurred while logging out.");
-        }
-    };
+    const { user } = useGlobalContext();
 
     return (
         <SafeAreaView className={"h-full bg-white"}>
@@ -54,26 +25,48 @@ const Profile = () => {
                 <View className={"flex flex-row justify-center"}>
                     <View className={"flex flex-col items-center relative mt-5"}>
                         <Image source={{uri: user?.avatar}} className={"size-44 relative rounded-full"}/>
-                        <TouchableOpacity className={"absolute bottom-11 right-2"}>
-                            <Image source={icons.edit} className={"size-9"}/>
-                        </TouchableOpacity>
-                        <Text className={"text-2xl font-rubik-bold mt-2"}>{user ?.name}</Text>
+                        <Text className={"text-2xl font-rubik-bold mt-2"}>{user?.user_metadata.name}</Text>
                     </View>
                 </View>
 
-                <View className={"flex flex-col mt-10"}>
-                    <SettingsItem icon={icons.calendar} title={"My Bookings"}/>
-                    <SettingsItem icon={icons.wallet} title={"Payments"}/>
+                <View className={"flex flex-row mt-5"}>
+                    <View className={"flex-1 items-center border-r border-primary-200"}>
+                        <Text className={"text-2xl font-rubik-bold"}>
+                            562
+                        </Text>
+                        <Text className={"text-xl font-rubik-light text-black-100"}>
+                            Listings
+                        </Text>
+                    </View>
+                    <View className={"flex-1 items-center border-l border-r border-primary-200"}>
+                        <Text className={"text-2xl font-rubik-bold"}>
+                            432
+                        </Text>
+                        <Text className={"text-xl font-rubik-light text-black-100"}>
+                            Followers
+                        </Text>
+                    </View>
+                    <View className={"flex-1 items-center border-l border-primary-200"}>
+                        <Text className={"text-2xl font-rubik-bold"}>
+                            123
+                        </Text>
+                        <Text className={"text-xl font-rubik-light text-black-100"}>
+                            Likes
+                        </Text>
+                    </View>
                 </View>
 
-                <View className={"flex flex-col mt-5 border-t pt-5 border-primary-200"}>
-                    {settings.slice(2).map((item, index) => (
-                        <SettingsItem key={index} {... item} />
-                    ))}
-                </View>
-
-                <View className={"flex flex-col mt-5 border-t pt-5 border-primary-200"}>
-                    <SettingsItem icon={icons.logout} title={"Logout"} textStyle={"text-danger"} showArrow={false} onPress={handleLogout} />
+                <View className={"flex flex-row gap-3 mt-5"}>
+                    <TouchableOpacity className={"flex-1 items-center rounded-md border-2"} onPress={handleEditListingsPress}>
+                        <Text className={"text-xl font-rubik-bold"}>
+                            Edit Listings
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity className={"flex-1 items-center rounded-md border-2"} onPress={handleEditProfilePress}>
+                        <Text className={"text-xl font-rubik-bold"}>
+                            Edit Profile
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </SafeAreaView>

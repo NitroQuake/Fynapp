@@ -3,7 +3,7 @@ import {useSupabase} from "@/lib/useSupabase";
 import {getCurrentUser} from "./supabase";
 
 interface User {
-    $id: string;
+    id: string;
     name: string;
     email: string;
     avatar: string;

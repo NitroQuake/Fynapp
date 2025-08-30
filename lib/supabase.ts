@@ -2,6 +2,7 @@ import 'react-native-url-polyfill/auto'
 import { createClient } from '@supabase/supabase-js'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {GoogleSignin, statusCodes} from "@react-native-google-signin/google-signin";
+import {Property} from "estree";
 
 export const supabase = createClient("http://127.0.0.1:54321", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0", {
     auth: {
@@ -29,6 +30,8 @@ export async function login() {
 
             if (error) {
                 throw error;
+            } else {
+                await addProfile()
             }
 
             return true;
@@ -64,6 +67,29 @@ export async function logout() {
     }
 }
 
+async function addProfile() {
+    const { data: { user }, error } = await supabase.auth.getUser();
+
+    if (user) {
+        // Check if profile exists
+        const { data: profile, error: profileError } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", user.id)
+            .single();
+
+        if (!profile) {
+            // Insert new profile with Google user info
+            await supabase.from("profiles").insert({
+                id: user.id,
+                name: user.user_metadata.name,
+                email: user.email,
+                avatar: "https://ui-avatars.com/api/?name=" + user.user_metadata.full_name
+            });
+        }
+    }
+}
+
 export async function getCurrentUser() {
     try {
         const { data, error } = await supabase.auth.getUser();
@@ -81,6 +107,59 @@ export async function getCurrentUser() {
         return null;
     } catch (error) {
         console.log(error);
+        return null;
+    }
+}
+
+export async function addProperty(property: PropertyForm, user: User) {
+    try {
+        let propertyData: PropertyRow = {
+            profile_id: "",
+            gallery_ids: [],
+            review_ids: [],
+            name: property.name,
+            description: property.description,
+            condition: property.condition,
+            price: parseFloat(property.price),
+            address: property.address,
+            geolocation: property.geolocation,
+            image: property.thumbnail_image,
+        };
+
+        await addImageToGallery(property.thumbnail_image);
+        for (let i = 0; i < property.gallery.length; i++) {
+            const uuidImage = await addImageToGallery(property.gallery[i]);
+            propertyData.gallery_ids.push(uuidImage);
+        }
+
+        if (user) {
+            propertyData.profile_id = user.id;
+        } else {
+            throw new Error("Failed to grab user");
+        }
+
+        const { error } = await supabase.from('properties').insert(propertyData);
+
+        if (error) {
+            throw error;
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function addImageToGallery(imageUri: string) {
+    try {
+        const { data, error } = await supabase.from('galleries').insert({ image: imageUri }).select();
+
+        if (error) {
+            throw error;
+        }
+
+        return data[0].id;
+    } catch (error) {
+        console.error(error);
         return null;
     }
 }
@@ -146,7 +225,7 @@ export async function getPropertyById({ id }: { id: string }) {
             .from('properties')
             .select(`
                 *,
-                agent:agents(*)
+                profile:profiles(*)
             `)
             .eq('id', id)
             .single();
