@@ -149,6 +149,36 @@ export async function addProperty(property: PropertyForm, user: User) {
     }
 }
 
+export async function updateProperty(property: PropertyForm, propertyId: string) {
+    try {
+        let propertyData = {
+            gallery_ids: [],
+            name: property.name,
+            description: property.description,
+            condition: property.condition,
+            price: parseFloat(property.price),
+            address: property.address,
+            geolocation: property.geolocation,
+            image: property.thumbnail_image,
+        };
+
+        await addImageToGallery(property.thumbnail_image);
+        for (let i = 0; i < property.gallery.length; i++) {
+            const uuidImage = await addImageToGallery(property.gallery[i]);
+            propertyData.gallery_ids.push(uuidImage);
+        }
+
+        const { error } = await supabase.from('properties').update(propertyData).eq('id', propertyId);
+
+        if (error) {
+            throw error;
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 export async function addImageToGallery(imageUri: string) {
     try {
         const { data, error } = await supabase.from('galleries').insert({ image: imageUri }).select();
@@ -210,6 +240,26 @@ export async function getProperties({filter, query, limit }: {
         }
 
         const { data, error } = await result.order("created_at", { ascending: true });
+
+        return data;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+export async function getUserProperties( { userId }: { userId: string }) {
+    try {
+        const {data, error} = await supabase
+            .from('properties')
+            .select(`
+                *,
+                profile:profiles(*)
+            `)
+            .eq('profile_id', userId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
 
         return data;
     } catch (error) {

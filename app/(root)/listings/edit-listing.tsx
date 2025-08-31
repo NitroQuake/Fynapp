@@ -5,14 +5,44 @@ import CustomInput from "@/components/CustomInput";
 import {Picker} from '@react-native-picker/picker';
 import * as ImagePicker from "expo-image-picker";
 import icons from "@/constants/icons";
-import {addProperty} from "@/lib/supabase";
+import {addProperty, getPropertyById, updateProperty} from "@/lib/supabase";
 import {isValidAddressWithOSM} from "@/lib/google";
 import {useGlobalContext} from "@/lib/global-provider";
+import {Redirect, useLocalSearchParams} from "expo-router";
+import {useSupabase} from "@/lib/useSupabase";
 
 const EditListing = () => {
     const { user } = useGlobalContext();
+    const { property_id } = useLocalSearchParams<{ property_id?: string }>();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isInitializedWithID, setIsInitializedWithID] = useState(false);
     const [form, setForm] = useState({name: "", description: "", condition: "New", address: "", geolocation: "", price: "", thumbnail_image: "", gallery: []});
+
+    const { data: property} = property_id ?
+        useSupabase({
+        fn: getPropertyById,
+        params: {
+            id: property_id!
+        },
+    }) : {data: null};
+
+    if (property && property.profile?.id !== user?.id) {
+        return <Redirect href={`/properties/${property_id}`} />;
+    }
+
+    if (property && !isInitializedWithID) {
+        setForm({
+            name: property.name,
+            description: property.description,
+            condition: property.condition,
+            address: property.address,
+            geolocation: property.geolocation,
+            price: property.price.toString(),
+            thumbnail_image: property.image,
+            gallery: property.galleries.map((img) => img.image),
+        });
+        setIsInitializedWithID(true);
+    }
 
     const pickThumbnail = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -22,7 +52,7 @@ const EditListing = () => {
         });
 
         if (!result.canceled) {
-            setForm((prev) => ({...prev, thumbnail_image: result.assets[0].uri}))
+            setForm((prev) => ({...prev, thumbnail_image: result.assets[0].uri}));
         }
     };
 
@@ -61,12 +91,17 @@ const EditListing = () => {
             return Alert.alert("Please enter a valid address in Washington.");
         }
 
+
         setForm((prev) => ({...prev, geolocation: geolocation}))
 
         setIsSubmitting(true);
 
         try {
-            await addProperty(form, user)
+            if (isInitializedWithID) {
+                await updateProperty(form, property_id)
+            } else {
+                await addProperty(form, user)
+            }
         } catch (error) {
             Alert.alert(error.message);
         } finally {
