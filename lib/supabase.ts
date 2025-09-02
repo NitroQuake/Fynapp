@@ -40,7 +40,7 @@ export async function login() {
             return false;
         }
     } catch (error: any) {
-        console.log(error);
+        console.error(error);
 
         if (error.code === statusCodes.SIGN_IN_CANCELLED) {
 
@@ -106,8 +106,140 @@ export async function getCurrentUser() {
 
         return null;
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return null;
+    }
+}
+
+export async function isInCart({propertyId, userId}: {propertyId: string; userId: string}) {
+    try {
+        const {data, error} = await supabase.from("profiles").select("cart").eq("id", userId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data.cart?.includes(propertyId);
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
+export async function addToCart(propertyId: string, userId: string) {
+    try {
+        const {data, error} = await supabase.from("profiles").select("cart").eq("id", userId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        // Append the new UUID
+        const updatedCartIds = [...(data.cart || []), propertyId];
+
+        // Update the array in the database
+        const { error: updateError } = await supabase
+            .from("profiles")
+            .update({ cart: updatedCartIds })
+            .eq('id', userId);
+
+        if (updateError) throw updateError;
+
+    } catch(error) {
+        console.error(error);
+    }
+}
+
+export async function removeFromCart(propertyId: string, userId: string) {
+    try {
+        const {data, error} = await supabase.from("profiles").select("cart").eq("id", userId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        // Remove the UUID
+        const updatedCartIds = (data.cart || []).filter((id: string) => id !== propertyId);
+
+        // Update the array in the database
+        const { error: updateError } = await supabase
+            .from("profiles")
+            .update({ cart: updatedCartIds })
+            .eq('id', userId);
+
+        if (updateError) throw updateError;
+
+    } catch(error) {
+        console.error(error);
+    }
+}
+
+export async function getCartItems({userId}: {userId: string}) {
+    try {
+        let result = []
+        const {data, error} = await supabase.from("profiles").select("cart").eq("id", userId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        for (let i = 0; i < data.cart.length; i++) {
+            const property = await getPropertyById({id: data.cart[i]});
+            result.push(property);
+        }
+
+        return result;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+export async function addToLiked(propertyId: string, userId: string) {
+    try {
+        const {data, error} = await supabase.from("profiles").select("liked").eq("id", userId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        // Append the new UUID
+        const updatedLikedIds = [...(data.liked || []), propertyId];
+
+        // Update the array in the database
+        const { error: updateError } = await supabase
+            .from("profiles")
+            .update({ liked: updatedLikedIds })
+            .eq('id', userId);
+
+        if (updateError) throw updateError;
+
+    } catch(error) {
+        console.error(error);
+    }
+}
+
+export async function removeFromLiked(propertyId: string, userId: string) {
+    try {
+        const {data, error} = await supabase.from("profiles").select("liked").eq("id", userId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        // Remove the UUID
+        const updatedLikedIds = (data.liked || []).filter((id: string) => id !== propertyId);
+
+        // Update the array in the database
+        const {error: updateError} = await supabase
+            .from("profiles")
+            .update({liked: updatedLikedIds})
+            .eq('id', userId);
+
+        if (updateError) throw updateError;
+
+    } catch (error) {
+        console.error(error);
     }
 }
 

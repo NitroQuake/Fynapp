@@ -32,6 +32,8 @@ import wifi from "@/assets/icons/wifi.png";
 import location from "@/assets/icons/location.png";
 import edit from "@/assets/icons/edit.png";
 import chooseImage from "@/assets/icons/choose-image.png";
+import cart from "@/assets/icons/cart.png";
+import exit from "@/assets/icons/exit.png";
 
 export default {
   google,
@@ -68,4 +70,6 @@ export default {
   location,
   edit,
     chooseImage,
+    cart,
+    exit,
 };

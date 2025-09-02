@@ -8,9 +8,18 @@ import {Models} from "react-native-appwrite";
 interface Props {
     item: Models.Document;
     onPress?: () => void;
+    onLikedPress?: () => void;
+    isLiked?: boolean;
 }
 
-export const FeaturedCard = ({ item: {image, rating, name, address, price}, onPress }: Props) => {
+interface CartProps {
+    item: Models.Document;
+    onPress?: () => void;
+    onDeletePress?: () => void;
+    onPurchasePress?: () => void;
+}
+
+export const FeaturedCard = ({ item: {image, rating, name, address, price}, onPress, onLikedPress, isLiked }: Props) => {
     return (
         <TouchableOpacity onPress={onPress} className={"flex flex-col items-start w-60 h-80 relative"}>
             <Image source={{uri: image}} className={"size-full rounded-2xl"} />
@@ -31,14 +40,16 @@ export const FeaturedCard = ({ item: {image, rating, name, address, price}, onPr
                     <Text className={"text-xl font-rubik-extrabold text-white"}>
                         ${price}
                     </Text>
-                    <Image source={icons.heart} className={"size-5"}/>
+                    <TouchableOpacity onPress={onLikedPress}>
+                        <Image source={icons.heart} className={"size-5"}/>
+                    </TouchableOpacity>
                 </View>
             </View>
         </TouchableOpacity>
     )
 }
 
-export const Card = ({ item: {image, rating, name, address, price}, onPress }: Props) => {
+export const Card = ({ item: {image, rating, name, address, price}, onPress, onLikedPress, isLiked }: Props) => {
     return (
         <TouchableOpacity onPress={onPress} className={"flex-1 w-full mt-4 px-3 py-4 rounded-lg bg-white shadow-lg shadow-black-100/70 relative"}>
             <View className={"flex flex-row items-center absolute px-2 top-5 right-5 bg-white/90 p-1 rounded-full z-50"}>
@@ -58,7 +69,9 @@ export const Card = ({ item: {image, rating, name, address, price}, onPress }: P
                     <Text className={"text-xl font-rubik-bold text-primary-300"}>
                         ${price}
                     </Text>
-                    <Image source={icons.heart} className={"w-5 h-5 mr-2"} tintColor={"#191d31"}/>
+                    <TouchableOpacity onPress={onLikedPress}>
+                        <Image source={icons.heart} className={"w-5 h-5 mr-2"} tintColor={"#191d31"}/>
+                    </TouchableOpacity>
                 </View>
             </View>
         </TouchableOpacity>
@@ -88,6 +101,43 @@ export const EditCard = ({ item: {image, rating, name, address, price}, onPress 
                     <Image source={icons.heart} className={"w-5 h-5 mr-2"} tintColor={"#191d31"}/>
                 </View>
             </View>
+        </TouchableOpacity>
+    )
+}
+
+export const CartCard = ({ item: {image, rating, name, address, price}, onPress, onDeletePress, onPurchasePress }: CartProps) => {
+    return (
+        <TouchableOpacity onPress={onPress} className={"flex-1 flex-row w-full gap-3 p-3 rounded-lg border-t-2 border-primary-300"}>
+            <View className={"flex flex-row items-center absolute px-2 top-5 left-24 bg-white/90 p-1 rounded-full z-50"}>
+                <Image source={icons.star} className={"size-2.5"} />
+                <Text className={"text-xs font-rubik-bold text-primary-300 ml-0.5"}>{rating}</Text>
+            </View>
+
+            <Image source={{uri: image}} className={"w-32 h-32 rounded-lg"} />
+
+            <View className={"flex flex-col py-1.5"}>
+                <Text className={"text-2xl font-rubik-bold text-black-300"}>{name}</Text>
+                <Text className={"text-m font-rubik text-black-200"}>
+                    {address}
+                </Text>
+                <View className={"flex flex-1 justify-end"}>
+                    <Text className={"text-xl font-rubik-bold text-primary-300"}>
+                        ${price}
+                    </Text>
+                </View>
+            </View>
+
+            <View className={"flex flex-1 py-1.5"}>
+                <TouchableOpacity className={"items-end"} onPress={onDeletePress}>
+                    <Image source={icons.exit} className={"size-4"} tintColor={"#4B2E83"}/>
+                </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity className={"absolute right-3 bottom-3 justify-center bg-primary-300 p-2 rounded-full shadow-md"}>
+                <Text className="text-white text-lg text-center font-rubik-bold">
+                    Purchase
+                </Text>
+            </TouchableOpacity>
         </TouchableOpacity>
     )
 }

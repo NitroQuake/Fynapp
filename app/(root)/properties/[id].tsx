@@ -15,10 +15,14 @@ import images from "@/constants/images";
 import Comment from "@/components/Comment";
 
 import { useSupabase } from "@/lib/useSupabase";
-import {getPropertyById} from "@/lib/supabase";
+import {addToCart, getPropertyById, isInCart, removeFromCart} from "@/lib/supabase";
+import {useGlobalContext} from "@/lib/global-provider";
+import {useState, useEffect} from "react";
 
 const Property = () => {
+    const { user } = useGlobalContext()
     const { id } = useLocalSearchParams<{ id?: string }>();
+    const [inCartState, setInCartState] = useState(false);
 
     const windowHeight = Dimensions.get("window").height;
 
@@ -28,6 +32,28 @@ const Property = () => {
             id: id!
         },
     });
+
+    let { data: inCart } = useSupabase({
+        fn: isInCart,
+        params: {
+            propertyId: id!,
+            userId: user?.id!,
+        },
+    })
+
+    const handleAddOrRemoveFromCart = async () => {
+        if (inCartState) {
+            await removeFromCart(id!, user?.id!);
+            setInCartState(false);
+        } else {
+            await addToCart(id!, user?.id!);
+            setInCartState(true);
+        }
+    }
+
+    useEffect(() => {
+        setInCartState(!!inCart);
+    }, [inCart]);
 
     return (
         <View>
@@ -218,9 +244,9 @@ const Property = () => {
                         </Text>
                     </View>
 
-                    <TouchableOpacity className="flex-1 flex flex-row items-center justify-center bg-primary-300 py-3 rounded-full shadow-md shadow-zinc-400">
+                    <TouchableOpacity className="flex-1 flex flex-row items-center justify-center bg-primary-300 py-3 rounded-full shadow-md shadow-zinc-400" onPress={handleAddOrRemoveFromCart}>
                         <Text className="text-white text-lg text-center font-rubik-bold">
-                            Add to Cart
+                            {inCartState ? "Remove from Cart" : "Add to Cart"}
                         </Text>
                     </TouchableOpacity>
                 </View>

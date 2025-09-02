@@ -8,7 +8,7 @@ import icons from "@/constants/icons";
 // It takes in a focused prop to determine if the tab is active or not
 const TabIcon = ({focused, icon, title}: {focused: boolean; icon: any; title: string}) => (
     <View className={"flex-1 mt-3 flex flex-col items-center"}>
-        <Image source={icon} tintColor={focused ? "#0061ff" : "#666876"} resizeMode={"contain"} className={"size-6"}/>
+        <Image source={icon} tintColor={focused ? "#4B2E83" : "#666876"} resizeMode={"contain"} className={"size-6"}/>
         <Text className={`${focused ? "text-primary-300 front-rubik-medium" : "text-black-200 front-rubik"} text-xs w-full text-center mt-1`}>
             {title}
         </Text>
@@ -49,6 +49,17 @@ const TabsLayout = () => {
                     headerShown: false,
                     tabBarIcon: ({ focused}) => (
                         <TabIcon icon={icons.search} focused={focused} title={"Explore"} />
+                    )
+                }}
+            />
+
+            <Tabs.Screen
+                name="cart"
+                options={{
+                    title: "Cart",
+                    headerShown: false,
+                    tabBarIcon: ({ focused}) => (
+                        <TabIcon icon={icons.cart} focused={focused} title={"Cart"} />
                     )
                 }}
             />

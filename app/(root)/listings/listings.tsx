@@ -13,8 +13,7 @@ const Listings = () => {
     const handleAddListingPress = () => router.push("/listings/edit-listing");
     const { user } = useGlobalContext();
 
-    // Fetch properties based on the filter and query parameters
-    const {data: properties, loading, refetch} = useSupabase({
+    const {data: properties, loading} = useSupabase({
         fn: getUserProperties,
         params: {
             userId: user?.id!,
