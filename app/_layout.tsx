@@ -3,6 +3,7 @@ import "./global.css";
 import { useFonts } from "expo-font";
 import {useEffect} from "react";
 import GlobalProvider from "@/lib/global-provider";
+import {LikedPropertiesProvider} from "@/lib/liked-properties-provider";
 
 export default function RootLayout() {
     const [fontsLoaded] = useFonts({
@@ -24,7 +25,9 @@ export default function RootLayout() {
 
     return (
         <GlobalProvider>
-            <Stack screenOptions={{ headerShown: false }}/>;
+            <LikedPropertiesProvider>
+                <Stack screenOptions={{ headerShown: false }}/>;
+            </LikedPropertiesProvider>
         </GlobalProvider>
     )
 }

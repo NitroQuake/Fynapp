@@ -197,6 +197,8 @@ export async function getCartItems({userId}: {userId: string}) {
 
 export async function addToLiked(propertyId: string, userId: string) {
     try {
+        console.log("Added")
+
         const {data, error} = await supabase.from("profiles").select("liked").eq("id", userId).single();
 
         if (error) {
@@ -221,6 +223,8 @@ export async function addToLiked(propertyId: string, userId: string) {
 
 export async function removeFromLiked(propertyId: string, userId: string) {
     try {
+        console.log("REMOVED")
+
         const {data, error} = await supabase.from("profiles").select("liked").eq("id", userId).single();
 
         if (error) {
@@ -240,6 +244,21 @@ export async function removeFromLiked(propertyId: string, userId: string) {
 
     } catch (error) {
         console.error(error);
+    }
+}
+
+export async function getLikedIDs({userId}: {userId: string}) {
+    try {
+        const {data, error} = await supabase.from("profiles").select("liked").eq("id", userId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data.liked || [];
+    } catch (error) {
+        console.error(error);
+        return [];
     }
 }
 
@@ -394,6 +413,28 @@ export async function getUserProperties( { userId }: { userId: string }) {
         if (error) throw error;
 
         return data;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+export async function getLikedProperties({ userId }: { userId: string }) {
+    try {
+        let result = []
+
+        const {data, error} = await supabase.from("profiles").select("liked").eq("id", userId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        for (let i = 0; i < data.liked.length; i++) {
+            const property = await getPropertyById({id: data.liked[i]});
+            result.push(property);
+        }
+
+        return result;
     } catch (error) {
         console.error(error);
         return [];

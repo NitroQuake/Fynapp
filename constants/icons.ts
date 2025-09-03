@@ -34,6 +34,8 @@ import edit from "@/assets/icons/edit.png";
 import chooseImage from "@/assets/icons/choose-image.png";
 import cart from "@/assets/icons/cart.png";
 import exit from "@/assets/icons/exit.png";
+import heartFilled from "@/assets/icons/heart-filled.png";
+import heartFilledTinted from "@/assets/icons/heart-filled-tinted.png";
 
 export default {
   google,
@@ -72,4 +74,6 @@ export default {
     chooseImage,
     cart,
     exit,
+    heartFilled,
+    heartFilledTinted,
 };

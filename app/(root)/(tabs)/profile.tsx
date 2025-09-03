@@ -19,35 +19,45 @@ import NoResults from "@/components/NoResults";
 import Search from "@/components/Search";
 import Filters from "@/components/Filters";
 import {useSupabase} from "@/lib/useSupabase";
-import {getUserProperties} from "@/lib/supabase";
+import {getLikedProperties, getPropertyById} from "@/lib/supabase";
+import {useLikedProperties} from "@/lib/liked-properties-provider";
 
 const handleEditProfilePress = () => router.push("/profile settings/profile-settings");
 const handleEditListingsPress = () => router.push("/listings/listings");
 
 const Profile = () => {
     const { user } = useGlobalContext();
+    const { liked } = useLikedProperties()
 
-    const {data: properties, loading} = useSupabase({
-        fn: getUserProperties,
-        params: {
-            userId: user?.id!,
-        }
-    });
+    const handleItemData = async(id: string) => {
+        console.log("Yeet", id);
+
+        const { data: property } = useSupabase({
+            fn: getPropertyById,
+            params: {
+                id: id!
+            },
+        });
+
+        if (property) return property;
+        else { return null };
+    }
 
     const handleCardPress = (id: string) => router.push(`/properties/${id}`);
     return (
         <SafeAreaView className={"h-full bg-white"}>
             <FlatList
-                data={properties}
-                renderItem={({item}) => <Card item={item} onPress={() => handleCardPress(item.id)}/>}
+                data={liked}
+                renderItem={({item}) => <Card
+                    item={handleItemData(item)}
+                    onPress={() => handleCardPress(item)}
+                />}
                 keyExtractor={(item) => item.id}
                 numColumns={2} contentContainerClassName={"pb-32"}
                 columnWrapperClassName={"flex gap-5 px-5"}
                 showsVerticalScrollIndicator={false}
                 ListEmptyComponent={
-                    loading ? (
-                        <ActivityIndicator size="large" className={"text-primary-300 mt-5"}/>
-                    ) : <NoResults />
+                    <NoResults />
                 }
                 ListHeaderComponent={
                     <View className={"px-5"}>

@@ -1,15 +1,14 @@
 import {View, Text, Image, TouchableOpacity} from 'react-native'
-import React from 'react'
+import React, {useState} from 'react'
 
 import images from "@/constants/images";
 import icons from "@/constants/icons";
 import {Models} from "react-native-appwrite";
+import { useLikedProperties } from "@/lib/liked-properties-provider";
 
 interface Props {
     item: Models.Document;
     onPress?: () => void;
-    onLikedPress?: () => void;
-    isLiked?: boolean;
 }
 
 interface CartProps {
@@ -19,7 +18,18 @@ interface CartProps {
     onPurchasePress?: () => void;
 }
 
-export const FeaturedCard = ({ item: {image, rating, name, address, price}, onPress, onLikedPress, isLiked }: Props) => {
+export const FeaturedCard = ({ item: {id, image, rating, name, address, price}, onPress}: Props) => {
+    const { liked, addLiked, removeLiked } = useLikedProperties();
+    const isLiked = liked.includes(id);
+
+    const handleLikePress = () => {
+        if (isLiked) {
+            removeLiked(id);
+        } else {
+            addLiked(id)
+        }
+    }
+
     return (
         <TouchableOpacity onPress={onPress} className={"flex flex-col items-start w-60 h-80 relative"}>
             <Image source={{uri: image}} className={"size-full rounded-2xl"} />
@@ -40,8 +50,8 @@ export const FeaturedCard = ({ item: {image, rating, name, address, price}, onPr
                     <Text className={"text-xl font-rubik-extrabold text-white"}>
                         ${price}
                     </Text>
-                    <TouchableOpacity onPress={onLikedPress}>
-                        <Image source={icons.heart} className={"size-5"}/>
+                    <TouchableOpacity onPress={handleLikePress}>
+                        <Image source={isLiked ? icons.heartFilled : icons.heart} className={"size-5"}/>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -49,7 +59,18 @@ export const FeaturedCard = ({ item: {image, rating, name, address, price}, onPr
     )
 }
 
-export const Card = ({ item: {image, rating, name, address, price}, onPress, onLikedPress, isLiked }: Props) => {
+export const Card = ({ item: {id, image, rating, name, address, price}, onPress}: Props) => {
+    const { liked, addLiked, removeLiked } = useLikedProperties();
+    const isLiked = liked.includes(id);
+
+    const handleLikePress = () => {
+        if (isLiked) {
+            removeLiked(id);
+        } else {
+            addLiked(id);
+        }
+    }
+
     return (
         <TouchableOpacity onPress={onPress} className={"flex-1 w-full mt-4 px-3 py-4 rounded-lg bg-white shadow-lg shadow-black-100/70 relative"}>
             <View className={"flex flex-row items-center absolute px-2 top-5 right-5 bg-white/90 p-1 rounded-full z-50"}>
@@ -69,8 +90,8 @@ export const Card = ({ item: {image, rating, name, address, price}, onPress, onL
                     <Text className={"text-xl font-rubik-bold text-primary-300"}>
                         ${price}
                     </Text>
-                    <TouchableOpacity onPress={onLikedPress}>
-                        <Image source={icons.heart} className={"w-5 h-5 mr-2"} tintColor={"#191d31"}/>
+                    <TouchableOpacity onPress={handleLikePress}>
+                        <Image source={isLiked ? icons.heartFilledTinted : icons.heart} className={"w-5 h-5 mr-2"} tintColor={isLiked ? undefined : "#191d31"}/>
                     </TouchableOpacity>
                 </View>
             </View>

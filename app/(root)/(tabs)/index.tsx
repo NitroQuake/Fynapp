@@ -11,9 +11,11 @@ import {getLatestProperties, getProperties} from "@/lib/supabase";
 import {useSupabase} from "@/lib/useSupabase";
 import {useEffect} from "react";
 import NoResults from "@/components/NoResults";
+import {useLikedProperties} from "@/lib/liked-properties-provider";
 
 export default function Index() {
     const {user} = useGlobalContext()
+    const {liked, addLiked, removeLiked, setLiked} = useLikedProperties();
     const params = useLocalSearchParams<{query?: string; filter?: string;}>();
 
     // Fetch the latest properties using the Supabase function
@@ -47,7 +49,10 @@ export default function Index() {
     <SafeAreaView className={"bg-white h-full"}>
         <FlatList
             data={properties}
-            renderItem={({item}) => <Card item={item} onPress={() => handleCardPress(item.id)}/>}
+            renderItem={({item}) => <Card
+                item={item}
+                onPress={() => handleCardPress(item.id)}
+            />}
             keyExtractor={(item) => item.id}
             numColumns={2} contentContainerClassName={"pb-32"}
             columnWrapperClassName={"flex gap-5 px-5"}
@@ -83,7 +88,10 @@ export default function Index() {
                             : !latestProperties || latestProperties.length === 0 ? <NoResults /> : (
                             <FlatList
                                 data={latestProperties}
-                                renderItem={({item}) => <FeaturedCard item={item} onPress={() => handleCardPress(item.id)}/>}
+                                renderItem={({item}) => <FeaturedCard
+                                    item={item}
+                                    onPress={() => handleCardPress(item.id)}
+                                />}
                                 keyExtractor={(item) => item.id}
                                 horizontal
                                 bounces={false}
