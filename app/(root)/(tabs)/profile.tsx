@@ -16,10 +16,6 @@ import {useGlobalContext} from "@/lib/global-provider";
 import {router} from "expo-router";
 import {Card} from "@/components/Cards";
 import NoResults from "@/components/NoResults";
-import Search from "@/components/Search";
-import Filters from "@/components/Filters";
-import {useSupabase} from "@/lib/useSupabase";
-import {getLikedProperties, getPropertyById} from "@/lib/supabase";
 import {useLikedProperties} from "@/lib/liked-properties-provider";
 
 const handleEditProfilePress = () => router.push("/profile settings/profile-settings");
@@ -27,29 +23,16 @@ const handleEditListingsPress = () => router.push("/listings/listings");
 
 const Profile = () => {
     const { user } = useGlobalContext();
-    const { liked } = useLikedProperties()
-
-    const handleItemData = async(id: string) => {
-        console.log("Yeet", id);
-
-        const { data: property } = useSupabase({
-            fn: getPropertyById,
-            params: {
-                id: id!
-            },
-        });
-
-        if (property) return property;
-        else { return null };
-    }
+    const { likedProperties } = useLikedProperties()
 
     const handleCardPress = (id: string) => router.push(`/properties/${id}`);
+
     return (
         <SafeAreaView className={"h-full bg-white"}>
             <FlatList
-                data={liked}
+                data={likedProperties}
                 renderItem={({item}) => <Card
-                    item={handleItemData(item)}
+                    item={item}
                     onPress={() => handleCardPress(item)}
                 />}
                 keyExtractor={(item) => item.id}

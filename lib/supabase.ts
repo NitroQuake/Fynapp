@@ -197,8 +197,6 @@ export async function getCartItems({userId}: {userId: string}) {
 
 export async function addToLiked(propertyId: string, userId: string) {
     try {
-        console.log("Added")
-
         const {data, error} = await supabase.from("profiles").select("liked").eq("id", userId).single();
 
         if (error) {
@@ -223,8 +221,6 @@ export async function addToLiked(propertyId: string, userId: string) {
 
 export async function removeFromLiked(propertyId: string, userId: string) {
     try {
-        console.log("REMOVED")
-
         const {data, error} = await supabase.from("profiles").select("liked").eq("id", userId).single();
 
         if (error) {
