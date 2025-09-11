@@ -4,9 +4,9 @@ import {SafeAreaView} from "react-native-safe-area-context";
 
 import images from "@/constants/images";
 import icons from "@/constants/icons";
-import {login} from "@/lib/supabase"
+import {loginWithGoogle} from "@/lib/supabase"
 import {useGlobalContext} from "@/lib/global-provider";
-import {Redirect} from "expo-router";
+import {Redirect, router} from "expo-router";
 import Auth from "@/components/Auth";
 
 const SignIn = () => {
@@ -16,8 +16,8 @@ const SignIn = () => {
     // This prevents the user from seeing the sign-in screen again
     if(!loading && isLoggedIn) return <Redirect href={"/"} />;
 
-    const handleLogin = async () => {
-        const result = await login();
+    const handleGoogleLogin = async () => {
+        const result = await loginWithGoogle();
 
         if (result) {
             // Navigate to the home screen or perform any other action after successful login
@@ -27,6 +27,9 @@ const SignIn = () => {
             Alert.alert("Error", "Failed to Login");
         }
     };
+
+    const handleSignUpPress = () => router.push("/sign-up");
+    const handleLoginPress = () => router.push("/login");
 
     return (
         <SafeAreaView className={"bg-white h-full"}>
@@ -41,12 +44,23 @@ const SignIn = () => {
                         <Text className={"text-primary-300"}>Your Ideal Item</Text>
                     </Text>
 
-                    <Text className={"text-lg font-rubik text-black-200 text-center mt-12"}>
-                        Login to Fynapp with Google
-                    </Text>
+                    <View className={"flex flex-row items-center gap-4 mt-5"}>
+                        <TouchableOpacity className={"flex-1 py-3 bg-primary-300 rounded-full items-center"} onPress={handleLoginPress}>
+                            <Text className={"text-lg font-rubik-bold text-white"}>Login</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity className={"flex-1 py-3 bg-primary-300 rounded-full items-center"} onPress={handleSignUpPress}>
+                            <Text className={"text-lg font-rubik-bold text-white"}>Sign Up</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                    <View className={"flex flex-row items-center justify-center py-4 mt-5"}>
-                        <Auth onPress={handleLogin} />
+                    <View className={"flex flex-row items-center justify-center mt-5"}>
+                        <View className={"flex-1 h-px bg-primary-300"}></View>
+                        <Text className={"font-rubik-medium text-base text-primary-300 mx-4"}>Or</Text>
+                        <View className={"flex-1 h-px bg-primary-300"}></View>
+                    </View>
+
+                    <View className={"flex flex-col items-center justify-center mt-5"}>
+                        <Auth onPress={handleGoogleLogin} />
                     </View>
                 </View>
             </ScrollView>

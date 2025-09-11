@@ -25,7 +25,7 @@ export const GlobalProvider = ({ children }: {children: ReactNode}) => {
         refetch,
     } = useSupabase({
         fn: getCurrentUser,
-    })
+    });
 
     const isLoggedIn = !!user;
     // !null = true => !true => false

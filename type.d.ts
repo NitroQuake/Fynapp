@@ -31,3 +31,10 @@ interface PropertyRow {
     geolocation: string;
     image: string;
 }
+
+interface Message = {
+    message: string;
+    user_name: string;
+    avatar?: string;
+    timestamp: string;
+};

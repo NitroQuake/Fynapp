@@ -55,6 +55,8 @@ const Property = () => {
         setInCartState(!!inCart);
     }, [inCart]);
 
+    const handleChatPress = (id: string) => router.push(`/chats/chat?id=${id}`);
+
     return (
         <View>
             <ScrollView
@@ -142,7 +144,9 @@ const Property = () => {
                             </View>
 
                             <View className="flex flex-row items-center gap-3">
-                                <Image source={icons.chat} className="size-7" />
+                                <TouchableOpacity className={"rounded-full"} onPress={() => handleChatPress(property?.profile?.id!)}>
+                                    <Image source={icons.chat} className="size-7" />
+                                </TouchableOpacity>
                                 <Image source={icons.phone} className="size-7" />
                             </View>
                         </View>

@@ -18,13 +18,12 @@ import {Card} from "@/components/Cards";
 import NoResults from "@/components/NoResults";
 import {useLikedProperties} from "@/lib/liked-properties-provider";
 
-const handleEditProfilePress = () => router.push("/profile settings/profile-settings");
-const handleEditListingsPress = () => router.push("/listings/listings");
-
 const Profile = () => {
     const { user } = useGlobalContext();
     const { likedProperties } = useLikedProperties()
 
+    const handleEditProfilePress = () => router.push("/profile settings/profile-settings");
+    const handleEditListingsPress = () => router.push("/listings/listings");
     const handleCardPress = (id: string) => router.push(`/properties/${id}`);
 
     return (
@@ -54,7 +53,7 @@ const Profile = () => {
                         <View className={"flex flex-row justify-center"}>
                             <View className={"flex flex-col items-center relative mt-5"}>
                                 <Image source={{uri: user?.avatar}} className={"size-44 relative rounded-full"}/>
-                                <Text className={"text-2xl font-rubik-bold mt-2"}>{user?.user_metadata.name}</Text>
+                                <Text className={"text-2xl font-rubik-bold mt-2"}>{user?.name}</Text>
                             </View>
                         </View>
 

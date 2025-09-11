@@ -18,6 +18,12 @@ interface CartProps {
     onPurchasePress?: () => void;
 }
 
+interface ChatCardProps {
+    name: string;
+    avatar: string;
+    onPress?: () => void;
+}
+
 export const FeaturedCard = ({ item: {id, image, rating, name, address, price}, onPress}: Props) => {
     const { liked, addLiked, removeLiked } = useLikedProperties();
     const isLiked = liked.includes(id);
@@ -159,6 +165,22 @@ export const CartCard = ({ item: {image, rating, name, address, price}, onPress,
                     Purchase
                 </Text>
             </TouchableOpacity>
+        </TouchableOpacity>
+    )
+}
+
+export const ChatCard = ({ name, avatar, onPress }: ChatCardProps) => {
+    return (
+        <TouchableOpacity onPress={onPress} className={"flex-1 flex-row w-full gap-3 p-3 rounded-lg border-t-2 border-primary-300"}>
+            <View className={"flex flex-row items-center absolute px-2 top-2 left-10 bg-primary-300 p-1 rounded-full z-50"}>
+                <Text className={"text-xs font-rubik-bold text-white ml-0.5"}>5</Text>
+            </View>
+
+            <Image source={{uri: avatar}} className={"size-12 rounded-full"} />
+
+            <View className={"flex flex-col py-0.5"}>
+                <Text className={"text-2xl font-rubik-bold text-black-300"}>{name}</Text>
+            </View>
         </TouchableOpacity>
     )
 }

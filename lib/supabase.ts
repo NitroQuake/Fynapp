@@ -2,7 +2,7 @@ import 'react-native-url-polyfill/auto'
 import { createClient } from '@supabase/supabase-js'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {GoogleSignin, statusCodes} from "@react-native-google-signin/google-signin";
-import {Property} from "estree";
+import {Alert} from "react-native";
 
 export const supabase = createClient("http://127.0.0.1:54321", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0", {
     auth: {
@@ -13,7 +13,57 @@ export const supabase = createClient("http://127.0.0.1:54321", "eyJhbGciOiJIUzI1
     },
 });
 
-export async function login() {
+export async function signUpWithEmail(email: string, user_name: string, password: string) {
+    try {
+        const { data, error} = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    display_name: user_name, // Include the display name here
+                },
+            },
+        })
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
+            Alert.alert('Please check your inbox for email verification!')
+            return false;
+        }
+
+        await addProfile();
+
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
+export async function loginWithEmail(email: string, password: string) {
+    try {
+        const { error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        })
+
+        if (error) {
+            throw error;
+        } else {
+            await addProfile()
+        }
+
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
+export async function loginWithGoogle() {
     GoogleSignin.configure({
         webClientId: "884581020517-ga0cacujudfbjtumavfgsj833ikhv773.apps.googleusercontent.com", // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
         scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
@@ -70,6 +120,10 @@ export async function logout() {
 async function addProfile() {
     const { data: { user }, error } = await supabase.auth.getUser();
 
+    if (error) {
+        throw error;
+    }
+
     if (user) {
         // Check if profile exists
         const { data: profile, error: profileError } = await supabase
@@ -79,13 +133,22 @@ async function addProfile() {
             .single();
 
         if (!profile) {
-            // Insert new profile with Google user info
-            await supabase.from("profiles").insert({
-                id: user.id,
-                name: user.user_metadata.name,
-                email: user.email,
-                avatar: "https://ui-avatars.com/api/?name=" + user.user_metadata.full_name
-            });
+            if (user.app_metadata.provider === "google") {
+                // Insert new profile with Google user info
+                await supabase.from("profiles").insert({
+                    id: user.id,
+                    name: user.user_metadata.full_name,
+                    email: user.email,
+                    avatar: "https://ui-avatars.com/api/?name=" + user.user_metadata.full_name
+                });
+            } else if (user.app_metadata.provider === "email"){
+                await supabase.from("profiles").insert({
+                    id: user.id,
+                    name: user.user_metadata.display_name,
+                    email: user.email,
+                    avatar: "https://ui-avatars.com/api/?name=" + user.user_metadata.display_name
+                });
+            }
         }
     }
 }
@@ -98,13 +161,37 @@ export async function getCurrentUser() {
         }
 
         if (data.user?.id) {
-            return {
-                ...data.user,
-                avatar: "https://ui-avatars.com/api/?name=" + data.user.user_metadata.full_name
-            };
+            if (data.user.app_metadata.provider === "google"){
+                return {
+                    ...data.user,
+                    name: data.user.user_metadata.full_name,
+                    avatar: "https://ui-avatars.com/api/?name=" + data.user.user_metadata.full_name
+                };
+            } else if (data.user.app_metadata.provider === "email") {
+                return {
+                    ...data.user,
+                    name: data.user.user_metadata.display_name,
+                    avatar: "https://ui-avatars.com/api/?name=" + data.user.user_metadata.display_name
+                };
+            }
         }
 
         return null;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function getUserById({ id }: { id: string }) {
+    try {
+        const {data, error} = await supabase.from("profiles").select("*").eq("id", id).single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
     } catch (error) {
         console.error(error);
         return null;
@@ -186,6 +273,33 @@ export async function getCartItems({userId}: {userId: string}) {
         for (let i = 0; i < data.cart.length; i++) {
             const property = await getPropertyById({id: data.cart[i]});
             result.push(property);
+        }
+
+        return result;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+export async function getChatItems({userId, query}: {userId: string, query?: string}) {
+    try {
+        let result = []
+        const {data, error} = await supabase.from("profiles").select("chat").eq("id", userId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        for (let i = 0; i < data.chat.length; i++) {
+            const user = await supabase.from("profiles").select("*").eq("id", data.chat[i]).single();
+            if (query) {
+                if (user.data.name.toLowerCase().includes(query.toLowerCase())) {
+                    result.push(user.data);
+                }
+            } else {
+                result.push(user.data);
+            }
         }
 
         return result;
