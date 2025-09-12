@@ -264,6 +264,7 @@ export async function removeFromCart(propertyId: string, userId: string) {
 export async function getCartItems({userId}: {userId: string}) {
     try {
         let result = []
+        let sum = 0;
         const {data, error} = await supabase.from("profiles").select("cart").eq("id", userId).single();
 
         if (error) {
@@ -272,13 +273,17 @@ export async function getCartItems({userId}: {userId: string}) {
 
         for (let i = 0; i < data.cart.length; i++) {
             const property = await getPropertyById({id: data.cart[i]});
+            sum += property.price;
             result.push(property);
         }
 
-        return result;
+        return {
+            result: result,
+            sum: sum
+        };
     } catch (error) {
         console.error(error);
-        return [];
+        return {};
     }
 }
 

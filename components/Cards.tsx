@@ -5,6 +5,7 @@ import images from "@/constants/images";
 import icons from "@/constants/icons";
 import {Models} from "react-native-appwrite";
 import { useLikedProperties } from "@/lib/liked-properties-provider";
+import CheckoutScreen from "@/components/CheckoutScreen";
 
 interface Props {
     item: Models.Document;
@@ -160,11 +161,11 @@ export const CartCard = ({ item: {image, rating, name, address, price}, onPress,
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity className={"absolute right-3 bottom-3 justify-center bg-primary-300 p-2 rounded-full shadow-md"}>
+            <CheckoutScreen className={"absolute right-3 bottom-3 justify-center bg-primary-300 p-2 rounded-full shadow-md"} price={price} >
                 <Text className="text-white text-lg text-center font-rubik-bold">
                     Purchase
                 </Text>
-            </TouchableOpacity>
+            </CheckoutScreen>
         </TouchableOpacity>
     )
 }
